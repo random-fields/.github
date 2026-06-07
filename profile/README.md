@@ -27,13 +27,28 @@ across `definitions_codex.lean` (Ising objects), `high_temperature_codex.lean`
 master `blueprint_codex.md` and a `Proofideas/` scratch area. Lake build files
 and agent-coordination files are gitignored, so only source + docs are tracked.
 
-**[`free-probability`](https://github.com/random-fields/free-probability)** — an
-early, planning-only effort to formalize **free probability** in Lean 4
-(Apache-2.0). The substantive content is `plan/ZW.md`, a scratch note targeting
-the **free central limit theorem**: go directly to the free CLT (skip building
-classical CLT first), with the noted blocker that Mathlib has `Finpartition` and
-Catalan numbers but lacks pair partitions / non-crossing pairings and their
-enumeration. No Lean code or Lake project yet.
+**[`free-probability`](https://github.com/random-fields/free-probability)** — a
+Lean 4 formalization of **free probability** (Apache-2.0, Mathlib v4.30.0). The
+foundations are in place: `NoncommutativeProbability.lean` (noncommutative
+probability spaces + free independence), `Partition.lean` (non-crossing and pair
+partitions on `Fin n` as a finite lattice), and `ClassicalCLT.lean` (the classical
+CLT, agent-proven). A `kg-free-cumulants` branch adds **free cumulants** via Möbius
+inversion over the non-crossing-partition lattice, with the moment–cumulant
+relation proven (zero `sorry`s, axioms `propext`/`Classical.choice`/`Quot.sound`) —
+produced by the `design-tools` autoformalization loop from the knowledge graph.
+Target on deck: the **free CLT**.
+
+**[`design-tools`](https://github.com/random-fields/design-tools)** — KG-driven
+autoformalization tooling. `scaffold_target.py` turns any knowledge-graph node into
+a ready-to-formalize Lean scaffold: a spec card (informal statement, suggested Lean
+name, sources, and the *frontier cut* — each prerequisite's coverage against
+Mathlib ∪ our repos, with the nearest reusable declaration) plus a starter `.lean`
+skeleton. `build_roadmap.py` ranks the absent backbone into a prioritized,
+dependency-ordered backlog (`mathlib2_queue.jsonl`, 298 Tier-1 targets), and
+`docs/autoformalization-playbook.md` documents the loop with a reusable
+formalizer-agent prompt — so *pick a target → scaffold → agent → verified Lean →
+PR* becomes repeatable rather than bespoke. Worked example: free-probability's
+free-cumulants module.
 
 ## Current state
 
@@ -48,7 +63,9 @@ small-contour minority-coverage / discrete-Jordan geometric step) and
 already reduced in `Proofideas/` to concrete, Jordan-free residuals; the
 definitions layer carries 0 axioms. It was deliberately **paused 2026-06-01** in
 a green state pending a "dedup tracedContours" design decision.
-**`free-probability`** is at the idea stage — a target (free CLT) and a known
-missing-infrastructure list, no code. Net: one formalization near completion, one
-just starting, and a planning layer that already maps far more of the literature
-than either repo has yet formalized.
+**`free-probability`** now has its foundations (noncommutative probability,
+non-crossing/pair partitions, classical CLT) plus an agent-formalized free-cumulants
+module, with the free CLT next. Net: one formalization near completion, one building
+up from foundations, a `design-tools` loop that turns the knowledge map into Lean
+targets, and a planning layer that maps far more of the literature than the repos
+have yet formalized.
