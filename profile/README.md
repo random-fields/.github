@@ -66,15 +66,17 @@ end-to-end target**: a constructive field-theory mass-gap goal that *consumes* t
 foundation repos (a downstream application, not a base).
 
 **[`free-probability`](https://github.com/random-fields/free-probability)** — a
-Lean 4 formalization of **free probability** (Apache-2.0, Mathlib v4.30.0). The
-foundations are in place: `NoncommutativeProbability.lean` (noncommutative
-probability spaces + free independence), `Partition.lean` (non-crossing and pair
-partitions on `Fin n` as a finite lattice), and `ClassicalCLT.lean` (the classical
-CLT, agent-proven). A `kg-free-cumulants` branch adds **free cumulants** via Möbius
-inversion over the non-crossing-partition lattice, with the moment–cumulant
-relation proven (zero `sorry`s, axioms `propext`/`Classical.choice`/`Quot.sound`) —
-produced by the `design-tools` autoformalization loop from the knowledge graph.
-Target on deck: the **free CLT**.
+Lean 4 formalization of **free probability** following **Arup Bose's textbook**
+(`FreeProbability/Arup/Chapter1–6.lean`). An active, substantial library: roughly
+385 lemmas/theorems across the six chapters — noncommutative probability & free
+independence, non-crossing/pair partitions, moments & free cumulants, and (Ch. 6)
+free additive/multiplicative convolution with the semicircle and free-CLT-adjacent
+laws. Chapter 5 is sorry-free; ~114 `sorry`s remain, concentrated in Ch. 3 and the
+newest Ch. 6 (the free-convolution / free-CLT frontier). Alongside the main body,
+the `design-tools` autoformalization loop maintains **sorry-free `kg-*` branches**
+(`kg-free-cumulants` — free cumulants via Möbius inversion over the non-crossing
+lattice, moment–cumulant relation proven; `kg-noncrossing-catalan`;
+`kg-semicircle-moments`). Target on deck: the **free CLT / semicircle law**.
 
 **[`design-tools`](https://github.com/random-fields/design-tools)** — KG-driven
 autoformalization tooling. `scaffold_target.py` turns any knowledge-graph node into
