@@ -17,15 +17,53 @@ formalize and tracks coverage against the frontier = Mathlib ∪ our own Lean
 repos; it contains no Lean code itself.
 
 **[`GibbsMeasure`](https://github.com/random-fields/GibbsMeasure)** — a Lean 4
-formalization of the **finite-volume 2D Ising phase transition**: magnetization
-bounded away from zero at low temperature (Peierls / contour argument) and
-concentrating at zero at high temperature, packaged as the target
-`temperature_statement` (constants β₁ > β₂ > 0). About 12.6k lines of Lean
-across `definitions_codex.lean` (Ising objects), `high_temperature_codex.lean`
-(the HT1–HT12 expansion → correlation-decay → concentration chain),
-`low_temperature_codex.lean` (the Peierls argument), and `lattice.lean`, with a
-master `blueprint_codex.md` and a `Proofideas/` scratch area. Lake build files
-and agent-coordination files are gitignored, so only source + docs are tracked.
+formalization (Mathlib v4.30) with two strands. **(a) The finite-volume 2D Ising
+phase transition** (`temperature_statement`): spontaneous magnetization at low
+temperature (Peierls / contour) and correlation decay / concentration at high
+temperature. **(b) Friedli–Velenik Chapter 6 — the general DLR theory of Gibbs
+measures** (`Ch6Subtree/`, ~26k lines, **merged 2026-07-28, reviewed + approved**):
+the DLR formalism (proper, consistent specification kernels), Gibbs-measure
+existence, **Dobrushin & Kotecký–Preiss cluster-expansion uniqueness**, the
+**extremal (Choquet) decomposition** (tail-triviality ⇔ short-range correlations,
+with an a.e. Lévy-downward martingale theorem not yet in Mathlib), and the
+**variational principle** (Gibbs ⟺ equilibrium state, incl. the Lanford–Ruelle
+converse) — sorry-free, axiom-clean. This DLR base is now consumed by
+`RandomClusterModel`.
+
+**[`RandomClusterModel`](https://github.com/random-fields/RandomClusterModel)** — a
+Lean 4 formalization of the **random-cluster (Fortuin–Kasteleyn) model** (Mathlib
+v4.30), built on GibbsMeasure's Ch.6 DLR base (imported byte-for-byte). Grimmett,
+*The Random-Cluster Model*, Ch. 2–3 (**reviewed + approved 2026-07-29**): the
+FKG / Holley / monotone-coupling toolkit and the **KKL / BKKKL influence +
+sharp-threshold** theory (transporting O'Donnell's `FABL` KKL to monotonic measures
+via dyadic approximation), then the random-cluster measure
+`φ_{p,q} ∝ p^{|open|}(1−p)^{|closed|}q^{k(ω)}` with positive association (`q ≥ 1`),
+the Grimmett (3.21) comparison inequalities, Edwards–Sokal / Ising domination, and
+a Russo-type differential. Sorry-free, axiom-clean, build-green — autoformalized via
+`design-tools` and human/AI-reviewed.
+
+**[`RandomFields`](https://github.com/random-fields/RandomFields)** — the
+**foundations monorepo** (Primitive A + Layer 1, Track A): symmetric Markovian
+Dirichlet forms, the Ornstein–Uhlenbeck semigroup with Bakry–Émery / log-Sobolev,
+and the isonormal Gaussian process + **Wiener chaos + hypercontractivity** — the
+richest launchpad for the analysis-side program. The isonormal / chaos /
+hypercontractivity layer is axiom-free; a few interim Hermite / chaos-orthogonality
+axioms and three isolated `sorry`s (unbounded generation) are flagged for discharge.
+
+**[`graphons`](https://github.com/random-fields/graphons)** — a Lean 4
+formalization of **graphons & dense graph limits** (Lovász; roadmap layer L9): the
+cut metric, sampling, and limit theory, with a mature, sorry-free core and an
+axiom-guard CI — the template for the org's plan-loop.
+
+**[`optimal-transport`](https://github.com/random-fields/optimal-transport)** — a
+Lean 4 formalization of **optimal transport & Wasserstein geometry** (L3 / Topic 3):
+Kantorovich duality, the Monge ↔ Kantorovich relaxation, and **Brenier's theorem** —
+0 `sorry` / 0 axiom. Foundation for the transport-entropy / functional-inequalities
+roadmap.
+
+**[`nlsm-massgap`](https://github.com/random-fields/nlsm-massgap)** — the **flagship
+end-to-end target**: a constructive field-theory mass-gap goal that *consumes* the
+foundation repos (a downstream application, not a base).
 
 **[`free-probability`](https://github.com/random-fields/free-probability)** — a
 Lean 4 formalization of **free probability** (Apache-2.0, Mathlib v4.30.0). The
@@ -52,20 +90,33 @@ free-cumulants module.
 
 ## Current state
 
-The org is in its build-out phase: `planning` is the mature, actively-maintained
-hub (knowledge graph at 16,833 nodes / 23,461 edges from 541 sources, grounded
-against Mathlib + 10 foundation repos), while the two formalization repos sit at
-opposite ends of maturity. **`GibbsMeasure`** is the most advanced: the
-high-temperature side is complete (0 sorries) and `low_temperature_main` is fully
-proven modulo exactly **two honest gaps** — `min_le_nine_allSqLen_small` (the
-small-contour minority-coverage / discrete-Jordan geometric step) and
-`expectedAllCountAtLength_le` (the open-orbit contour count+energy bound), both
-already reduced in `Proofideas/` to concrete, Jordan-free residuals; the
-definitions layer carries 0 axioms. It was deliberately **paused 2026-06-01** in
-a green state pending a "dedup tracedContours" design decision.
-**`free-probability`** now has its foundations (noncommutative probability,
-non-crossing/pair partitions, classical CLT) plus an agent-formalized free-cumulants
-module, with the free CLT next. Net: one formalization near completion, one building
-up from foundations, a `design-tools` loop that turns the knowledge map into Lean
-targets, and a planning layer that maps far more of the literature than the repos
-have yet formalized.
+The org has moved from "one repo near completion" into a **stack of interlocking
+formalization bases**. `planning` remains the mature, actively-maintained hub
+(knowledge graph at 16,833 nodes / 23,461 edges from 541 sources, grounded against
+Mathlib + our own repos), and the `design-tools` autoformalization loop is now
+producing **reviewed, sorry-free, axiom-clean** Lean rather than scaffolds only.
+
+- **Statistical mechanics.** `GibbsMeasure` grew a full **Friedli–Velenik Ch.6 DLR
+  theory** (specifications → existence → Dobrushin/Kotecký–Preiss uniqueness →
+  extremal decomposition → variational principle), **merged 2026-07-28** and
+  reviewed. `RandomClusterModel` builds the **random-cluster / FK model** (Grimmett
+  Ch. 2–3: FKG/Holley, KKL/BKKKL, comparison, Edwards–Sokal) on that base,
+  **reviewed + approved 2026-07-29**. `percolation` extends the same line (Grimmett
+  percolation), autoformalized, review pending. The original
+  **2D Ising phase transition** in `GibbsMeasure` is complete on the high-temperature
+  side and proven low-temperature modulo two honest geometric residuals
+  (`min_le_nine_allSqLen_small`, `expectedAllCountAtLength_le`), paused 2026-06-01
+  in a green state.
+- **Analysis foundations.** `RandomFields` (Dirichlet forms, Ornstein–Uhlenbeck /
+  Bakry–Émery, Wiener chaos + hypercontractivity), `optimal-transport` (Kantorovich
+  duality, Brenier — 0 sorry / 0 axiom), and `graphons` (dense graph limits) are the
+  launchpads for the functional-inequalities and transport-entropy roadmaps.
+  `nlsm-massgap` is the flagship downstream application that consumes them.
+- **Free probability.** `free-probability` has its foundations (noncommutative
+  probability, non-crossing/pair partitions, classical CLT) plus an agent-formalized
+  free-cumulants module, with the free CLT next.
+
+Net: several reviewed formalization bases across statistical mechanics and analysis,
+an autoformalization loop turning the knowledge map into verified Lean, and a
+planning layer that still maps far more of the literature than the repos have yet
+formalized.
